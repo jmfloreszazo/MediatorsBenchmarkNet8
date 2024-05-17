@@ -11,6 +11,7 @@ public class MediatorsService
     private static readonly IRequestClient<MassTransitRequest> _massTransitMediator;
     private static readonly ISender _mediatRMediator;
     private static readonly ICustomMediator _customMediator;
+    private static readonly INonGenericCustomMediator _nonGenericCustomMediator;
 
     static MediatorsService()
     {
@@ -23,6 +24,9 @@ public class MediatorsService
         services.AddTransient<ICustomRequestHandler<PingCustomRequest, string>, PingCustomHandler>();
         services.AddSingleton<ICustomMediator, CustomMediator>();
 
+        services.AddTransient<INonGenericCustomPingRequestHandler, NonGenericCustomPingHandler>();
+        services.AddSingleton<INonGenericCustomMediator, NonGenericCustomMediator>();
+
         var serviceProvider = services.BuildServiceProvider();
 
         var massTransitMediator = serviceProvider.GetRequiredService<IMediator>();
@@ -31,6 +35,8 @@ public class MediatorsService
         _mediatRMediator = serviceProvider.GetRequiredService<ISender>();
 
         _customMediator = serviceProvider.GetRequiredService<ICustomMediator>();
+
+        _nonGenericCustomMediator = serviceProvider.GetRequiredService<INonGenericCustomMediator>();
     }
 
     public static MassTransitResponse MassTransitMediator(MassTransitRequest request)
@@ -46,6 +52,11 @@ public class MediatorsService
     public static string CustomMediator(PingCustomRequest request)
     {
         return _customMediator.Send(request).Result;
+    }
+
+    public static string NonGenericCustomMediator(NonGenericCustomPingRequest request)
+    {
+        return _nonGenericCustomMediator.SendPingRequest(request).Result;
     }
 
     public static DirectResponse Direct(MediatorNet8Request mediatorNet8Request)

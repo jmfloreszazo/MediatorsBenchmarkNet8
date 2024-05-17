@@ -14,18 +14,24 @@ public class CustomMediator : ICustomMediator
         var requestType = customRequest.GetType();
         var handlerType = typeof(ICustomRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
         var handler = _serviceProvider.GetService(handlerType);
-
-        if (handler == null)
-        {
-            throw new InvalidOperationException($"No handler registered for type {requestType.Name}");
-        }
-
         var method = handlerType.GetMethod("Handle");
         var response = await (Task<TResponse>)method.Invoke(handler, new object[] { customRequest });
 
         return response;
     }
+}
+
+public interface ICustomRequestHandler<TRequest, TResponse> where TRequest : ICustomRequest<TResponse>
+{
+    Task<TResponse> Handle(TRequest request);
+}
+
+public interface ICustomMediator
+{
+    Task<TResponse> Send<TResponse>(ICustomRequest<TResponse> request);
 
 }
 
-public sealed record class CustomMediatorResponse(string? Message);
+public interface ICustomRequest<TResponse>
+{
+}

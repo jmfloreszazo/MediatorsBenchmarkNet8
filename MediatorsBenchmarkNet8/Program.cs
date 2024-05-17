@@ -39,9 +39,15 @@ public class Program
     }
 
     [Benchmark]
-    public void CustomMediator()
+    public void CustomGenericMediator()
     {
         MediatorsService.CustomMediator(new PingCustomRequest(_message));
+    }
+
+    [Benchmark]
+    public void CustomNonGenericMediator()
+    {
+        MediatorsService.NonGenericCustomMediator(new NonGenericCustomPingRequest(_message));
     }
 
     [Benchmark]
