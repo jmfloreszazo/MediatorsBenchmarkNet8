@@ -39,7 +39,13 @@ public class Program
     }
 
     [Benchmark]
-    public void MediatorNet8()
+    public void CustomMediator()
+    {
+        MediatorsService.CustomMediator(new PingCustomRequest(_message));
+    }
+
+    [Benchmark]
+    public void DirectRespose()
     {
         MediatorsService.Direct(new MediatorNet8Request(_message));
     }
